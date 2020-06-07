@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>index</title>
+</head>
+<body>
+    <h3><a th:href="@{/login}" th:unless="${userName}">login</a><br/></h3>
+    <h3><a th:href="@{/logout}" th:if="${userName}" th:text="|Hello, ${userName}. logout|"></a><br/><br/></h3>
+
+    <h3><a th:href="@{/}">page visible to all.</a><br/></h3>
+    <h3><a th:href="@{/user}">page visible to user.</a><br/></h3>
+    <h3><a th:href="@{/admin}">page visible to admin.</a><br/></h3>
+    <h3><a th:href="@{/userAndAdmin}">page visible to user and admin.</a><br/></h3>
+</body>
+</html>

@@ -1,17 +1,11 @@
 package top.focksor.loginwithspringsecurity.pojo;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * @author focksor
@@ -20,7 +14,7 @@ import java.util.List;
  */
 
 @Entity(name = "user_list")
-public class User implements UserDetails {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -30,40 +24,6 @@ public class User implements UserDetails {
     private String roles;
     private boolean enabled;
     private String phone;
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return this.enabled;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> authorities = new ArrayList<>();
-
-        if(this.roles!=null && !"".equals(this.roles)) {
-            String[] roleArray = this.roles.split(";");
-            for(String role:roleArray) {
-                authorities.add(new SimpleGrantedAuthority(role));
-            }
-        }
-
-        return authorities;
-    }
 
     public Integer getId() {
         return id;
@@ -81,7 +41,6 @@ public class User implements UserDetails {
         this.email = email;
     }
 
-    @Override
     public String getPassword() {
         return password;
     }
@@ -90,7 +49,6 @@ public class User implements UserDetails {
         this.password = new BCryptPasswordEncoder().encode(password);
     }
 
-    @Override
     public String getUsername() {
         return username;
     }
@@ -117,5 +75,18 @@ public class User implements UserDetails {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", username='" + username + '\'' +
+                ", roles='" + roles + '\'' +
+                ", enabled=" + enabled +
+                ", phone='" + phone + '\'' +
+                '}';
     }
 }

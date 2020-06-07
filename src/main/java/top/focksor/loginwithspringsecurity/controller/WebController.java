@@ -1,13 +1,15 @@
 package top.focksor.loginwithspringsecurity.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 import top.focksor.loginwithspringsecurity.pojo.User;
-import top.focksor.loginwithspringsecurity.service.UserServiceImpl;
+import top.focksor.loginwithspringsecurity.service.UserDetailsServiceImpl;
 
 /**
  * @author focksor
@@ -17,22 +19,58 @@ import top.focksor.loginwithspringsecurity.service.UserServiceImpl;
 
 @Controller
 public class WebController {
-    private UserServiceImpl userService;
+    private UserDetailsServiceImpl userService;
 
     @Autowired
-    public void setUserService(UserServiceImpl userService) {
+    public void setUserService(UserDetailsServiceImpl userService) {
         this.userService = userService;
     }
 
     @RequestMapping("login")
     public String login() {
+        createTestAccount();
+
+        return "login";
+    }
+
+    @RequestMapping("/")
+    public String index(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
+            String userName = authentication.getName();
+            model.addAttribute("userName", userName);
+        }
+        return "index";
+    }
+
+    @ResponseBody
+    @RequestMapping("/user")
+    public String user() {
+        return "user<br><br><a href=\"/logout\">logout</a>";
+    }
+
+    @ResponseBody
+    @RequestMapping("/admin")
+    public String admin() {
+        return "admin<br><br><a href=\"/logout\">logout</a>";
+    }
+
+    @ResponseBody
+    @RequestMapping("/userAndAdmin")
+    public String userAndAdmin() {
+        return "userAndAdmin<br><br><a href=\"/logout\">logout</a>";
+    }
+
+    public void createTestAccount() {
+        // Create Test Account
         if(!userService.isUser("admin")) {
             User user = new User();
             user.setEmail("focksor@outlook.com");
             user.setUsername("admin");
             user.setPassword("admin");
             user.setEnabled(true);
-            user.setRoles("ROLE_ADMIN;ROLE_USER");
+            user.setRoles("ROLE_ADMIN");
 
             userService.addUser(user);
         }
@@ -47,25 +85,5 @@ public class WebController {
 
             userService.addUser(user);
         }
-
-        return "login";
-    }
-
-    @ResponseBody
-    @RequestMapping("/")
-    public String index() {
-        return "index<br><br><a href=\"/logout\">logout</a>";
-    }
-
-    @ResponseBody
-    @RequestMapping("/user")
-    public String user() {
-        return "user<br><br><a href=\"/logout\">logout</a>";
-    }
-
-    @ResponseBody
-    @RequestMapping("/admin")
-    public String admin() {
-        return "admin<br><br><a href=\"/logout\">logout</a>";
     }
 }
